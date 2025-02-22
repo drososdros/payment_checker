@@ -1,14 +1,15 @@
 import os
+from datetime import datetime
 
 
 class CsvData:
     pass
 
     def __init__(self) -> None:
-        self.folder_name = "./input/csvs/"
+        self.folder_name = "../../month-payment-checker/main/input/csvs/"
         self.data = []
         self.p_join = os.path.join
-        self.employer_names = {"G.ΗΙGΑS", "ΧΙΓΚΑΣ", "G.Η"}
+        self.employer_names = {"G.ΗΙGΑS", "ΧΙΓΚΑΣ", "G.Η", "Γ.ΧΙΓΚΑΣ"}
 
     def in_employer_names(self, line):
         for i in self.employer_names:
@@ -29,14 +30,15 @@ class CsvData:
             for line in file:
                 if ";Π;" in line:
                     bank_data = BankData(line)
-                    if bank_data not in self.data and self.in_employer_names(bank_data.message):
+                    if bank_data not in self.data and self.in_employer_names(
+                            bank_data.message):
                         self.data.append(bank_data)
 
 
 class BankData:
     def __init__(self, line=None) -> None:
         self.line = line
-        self.date = ""
+        self.date = None
         self.amount = ""
         self.message = ""
         self.set_bank_data()
@@ -45,7 +47,7 @@ class BankData:
         if not self.line:
             raise ValueError("BankData: line shouldn't be empty")
         line = self.line.split(";")
-        self.date = line[1]
+        self.date = datetime.strptime(line[1] + " 00:00", "%d/%m/%Y %H:%M")
         self.message = line[2]
         self.amount = line[-3]
 
@@ -53,30 +55,23 @@ class BankData:
         return str(self.line)
 
     def __eq__(self, o):
-        return self.date == o.date \
-            and self.amount == o.amount \
-            and self.message == o.message
+        if isinstance(o, BankData):
+            return self.date == o.date \
+                and self.amount == o.amount \
+                and self.message == o.message
+        if isinstance(o, datetime):
+            return self.date == o
+        if isinstance(o, int):
+            if self.date is not None:
+                return self.date.month == o
+        return False
 
     def __lt__(self, o):
-        this = self.date.split("/")
-        other = o.date.split("/")
-        return this[2] < other[2] \
-            or this[2] == other[2] and this[1] < other[1] \
-            or (this[2] == other[2] and this[1] == other[1]
-                and this[0] < other[0])
+        return self.date < o.date
 
     def __gt__(self, o):
-        this = self.date.split("/")
-        other = o.date.split("/")
-        return this[2] > other[2] \
-            or this[2] == other[2] and this[1] > other[1] \
-            or (this[2] == other[2] and this[1] == other[1]
-                and this[0] > other[0])
+        return self.date > o.date
 
     def __repr__(self) -> str:
         return (f"date: {self.date}, ammount: {self.amount}," +
                 f" message: {self.message}")
-
-
-i = CsvData()
-i.extract_csv_data()
