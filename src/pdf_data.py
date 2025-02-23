@@ -1,5 +1,5 @@
 from datetime import datetime
-from PyPDF2 import PdfReader
+from PyPDF2 import PdfReader, PdfWriter
 import os
 
 greek_to_english_months = {
@@ -51,6 +51,7 @@ class PdfData:
             if "Περίοδος:".casefold() in data.casefold():
                 greek_name = data.split(":")[-1].split()
                 name = greek_to_english_months.get(greek_name[-2])
+                print(greek_name)
                 self.new_name = "_".join(greek_name) + ".pdf"
                 if name is None:
                     raise KeyError(
@@ -60,7 +61,9 @@ class PdfData:
                     f"10/{name}/{greek_name[-1]}", "%d/%B/%Y")
 
             if "ΠΡΟΚΑΤΑΒΟΛΗ".casefold() in data.casefold():
-                self.salary_advance = data.split()[-1]
+                salary = data.split()[-1]
+                print(salary)
+                self.salary_advance = salary
 
             if "ΥΠΟΛΟΙΠΟ ΠΛΗΡΩΤΕΩΝ ΑΠΟΔΟΧΩΝ".casefold() in data.casefold():
                 self.salary_payment = data.split()[-1]
@@ -87,7 +90,20 @@ class PdfFile:
             pdf_path = os.path.join(self.folder_name, file)
             pdf = PdfReader(pdf_path)
             pages = pdf.pages
-            for page in pages:
-                data = PdfData(page.extract_text(), file)
+
+            if len(pages) > 1:
+                for page in pages:
+                    wr_pdf = PdfWriter()
+                    data = PdfData(page.extract_text(), file)
+                    new_name = data.new_name
+                    data.current_filename = new_name
+                    wr_pdf.add_page(page)
+                    wr_pdf.write(self.folder_name+new_name)
+                    if data not in self.data:
+                        self.data.append(data)
+                os.remove(self.folder_name + file)
+            else:
+
+                data = PdfData(pages[0].extract_text(), file)
                 if data not in self.data:
                     self.data.append(data)

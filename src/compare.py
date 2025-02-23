@@ -44,7 +44,9 @@ class Compare:
                 # print(self.compare_advance(pdf, csv), self.compare_salary(
                 #     pdf, csv), "*", pdf.salary_advance, "*", csv.amount, "*", pdf.salary_payment)
 
-                if self.compare_advance(pdf, csv):
+                if pdf.salary_advance == "0,00":
+                    pay1 = True
+                elif self.compare_advance(pdf, csv):
                     pay1 = csv
 
                 if self.compare_salary(pdf, csv):
@@ -54,7 +56,10 @@ class Compare:
                     finish = Finished(pdf, pay1, pay2)
                     print(finish)
                     self.finished.append(finish)
-                    self.csv.remove(pay1)
+                    if pay1 is True:
+                        pass
+                    else:
+                        self.csv.remove(pay1)
                     self.csv.remove(pay2)
                     break
 
