@@ -6,7 +6,7 @@ from setting import Settings
 
 def main():
     s = Settings()
-    csv = CsvData()
+    csv = CsvData(s)
     csv.extract_csv_data()
     pdf = PdfFile(s)
     pdf.extract_data()

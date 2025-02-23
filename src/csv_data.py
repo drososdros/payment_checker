@@ -3,10 +3,9 @@ from datetime import datetime
 
 
 class CsvData:
-    pass
 
-    def __init__(self) -> None:
-        self.folder_name = "../../month-payment-checker/main/input/csvs/"
+    def __init__(self, settings) -> None:
+        self.settings = settings
         self.data = []
         self.p_join = os.path.join
         self.employer_names = {"G.ΗΙGΑS", "ΧΙΓΚΑΣ", "G.Η", "Γ.ΧΙΓΚΑΣ"}
@@ -18,13 +17,13 @@ class CsvData:
         return False
 
     def extract_csv_data(self):
-        for file in os.listdir(self.folder_name):
+        for file in os.listdir(self.settings.src_csv):
             if not file.casefold().endswith(".csv".casefold()):
                 raise IsADirectoryError(
-                    f"\"{self.folder_name}\": This dir should" +
+                    f"\"{self.settings.src_csv}\": This dir should" +
                     " contain only .csv files")
 
-            file = self.p_join(self.folder_name, file)
+            file = self.p_join(self.settings.src_csv, file)
             with open(file, "r") as fl:
                 file = fl.readlines()
             for line in file:
