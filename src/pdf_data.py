@@ -78,14 +78,14 @@ class PdfData:
 
 
 class PdfFile:
-    def __init__(self):
-        self.folder_name = "../../month-payment-checker/main/input/pdfs/"
+    def __init__(self, settings):
+        self.settings = settings
         self.data = []
         self.p_join = os.path.join
 
     def extract_data(self):
-        for file in os.listdir(self.folder_name):
-            pdf_path = os.path.join(self.folder_name, file)
+        for file in os.listdir(self.settings.src_pdfs):
+            pdf_path = os.path.join(self.settings.src_pdfs, file)
             pdf = PdfReader(pdf_path)
             pages = pdf.pages
 
@@ -96,10 +96,10 @@ class PdfFile:
                     new_name = data.new_name
                     data.current_filename = new_name
                     wr_pdf.add_page(page)
-                    wr_pdf.write(self.folder_name+new_name)
+                    wr_pdf.write(self.p_join(self.settings.src_pdfs, new_name))
                     if data not in self.data:
                         self.data.append(data)
-                os.remove(self.folder_name + file)
+                os.remove(self.p_join(self.settings.src_pdfs, file))
             else:
 
                 data = PdfData(pages[0].extract_text(), file)
