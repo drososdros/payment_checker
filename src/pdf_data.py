@@ -51,7 +51,6 @@ class PdfData:
             if "Περίοδος:".casefold() in data.casefold():
                 greek_name = data.split(":")[-1].split()
                 name = greek_to_english_months.get(greek_name[-2])
-                print(greek_name)
                 self.new_name = "_".join(greek_name) + ".pdf"
                 if name is None:
                     raise KeyError(
@@ -62,7 +61,6 @@ class PdfData:
 
             if "ΠΡΟΚΑΤΑΒΟΛΗ".casefold() in data.casefold():
                 salary = data.split()[-1]
-                print(salary)
                 self.salary_advance = salary
 
             if "ΥΠΟΛΟΙΠΟ ΠΛΗΡΩΤΕΩΝ ΑΠΟΔΟΧΩΝ".casefold() in data.casefold():

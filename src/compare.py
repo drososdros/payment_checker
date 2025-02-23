@@ -1,8 +1,6 @@
-from datetime import datetime, timedelta
+from datetime importtimedelta
 import os
 from shutil import move
-
-datetime.now().month
 
 
 class Finished:
@@ -41,8 +39,6 @@ class Compare:
             pay1, pay2 = None, None
 
             for csv in self.csv:
-                # print(self.compare_advance(pdf, csv), self.compare_salary(
-                #     pdf, csv), "*", pdf.salary_advance, "*", csv.amount, "*", pdf.salary_payment)
 
                 if pdf.salary_advance == "0,00":
                     pay1 = True
@@ -54,7 +50,6 @@ class Compare:
                 # input(#)
                 if pay1 and pay2:
                     finish = Finished(pdf, pay1, pay2)
-                    print(finish)
                     self.finished.append(finish)
                     if pay1 is True:
                         pass
