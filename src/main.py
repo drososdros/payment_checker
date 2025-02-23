@@ -10,7 +10,7 @@ def main():
     csv.extract_csv_data()
     pdf = PdfFile(s)
     pdf.extract_data()
-    comp = Compare(csv.data, pdf.data)
+    comp = Compare(csv.data, pdf.data, s)
     comp.results()
 
 

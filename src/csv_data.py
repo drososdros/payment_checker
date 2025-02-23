@@ -7,6 +7,7 @@ class CsvData:
     def __init__(self, settings) -> None:
         self.settings = settings
         self.data = []
+        self.finished = []
         self.p_join = os.path.join
         self.employer_names = {"G.ΗΙGΑS", "ΧΙΓΚΑΣ", "G.Η", "Γ.ΧΙΓΚΑΣ"}
 

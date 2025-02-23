@@ -15,10 +15,10 @@ class Finished:
 
 
 class Compare:
-    def __init__(self, csv_data, pdf_data):
+    def __init__(self, csv_data, pdf_data, settings):
+        self.settings = settings
         self.csv = sorted(csv_data)
         self.pdf = sorted(pdf_data)
-        self.dest = "../../month-payment-checker/main/data/pdfs/"
         self.finished = []
         if not self.csv or not self.pdf:
             print("there is nothing to do here")
@@ -58,18 +58,15 @@ class Compare:
                     self.csv.remove(pay2)
                     break
 
-        filename = "../../month-payment-checker/main/input/pdfs/"
-        mv_filename = "../../month-payment-checker/main/data/"
-        with open(os.path.join(mv_filename, "found.csv"), "a") as fl:
+        with open(os.path.join(self.settings.dest_folder, "found.csv"), "a") as fl:
             for i in self.finished:
-                filename = "../../month-payment-checker/main/input/pdfs/"
-                mv_filename = "../../month-payment-checker/main/data/"
-                src = os.path.join(filename, i.pdf.current_filename)
-                dest = os.path.join(mv_filename, "pdfs", i.pdf.new_name)
+                src = os.path.join(self.settings.src_pdfs,
+                                   i.pdf.current_filename)
+                dest = os.path.join(self.settings.dest_pdfs, i.pdf.new_name)
                 move(src, dest)
                 fl.write(str(i.csv))
                 fl.write(str(i.csv2))
 
-        with open(os.path.join(mv_filename, "Notfound.csv"), "a") as fl:
+        with open(os.path.join(self.settings.dest_folder, "Notfound.csv"), "a") as fl:
             for i in self.csv:
                 fl.write(str(i))
