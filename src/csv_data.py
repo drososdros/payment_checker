@@ -8,6 +8,7 @@ class CsvData:
         self.settings = settings
         self.data = []
         self.finished = []
+        self.not_found = []
         self.p_join = os.path.join
         self.employer_names = {"G.ΗΙGΑS", "ΧΙΓΚΑΣ", "G.Η", "Γ.ΧΙΓΚΑΣ"}
 
@@ -17,7 +18,26 @@ class CsvData:
                 return True
         return False
 
+    def load_not_found(self):
+        dest = self.p_join(self.settings.dest_csv, "Notfound.csv")
+        if os.path.exists(dest):
+            with open(dest, "r")as fl:
+                for line in fl:
+                    data = BankData(line)
+                    self.not_found.append(data)
+        self.data.extend(self.not_found)
+
+    def load_finished(self):
+        dest = self.p_join(self.settings.dest_csv, "found.csv")
+        if os.path.exists(dest):
+            with open(dest, "r")as fl:
+                for line in fl:
+                    data = BankData(line)
+                    self.finished.append(data)
+
     def extract_csv_data(self):
+        self.load_finished()
+        self.load_not_found()
         for file in os.listdir(self.settings.src_csv):
             if not file.casefold().endswith(".csv".casefold()):
                 raise IsADirectoryError(
@@ -30,8 +50,9 @@ class CsvData:
             for line in file:
                 if ";Π;" in line:
                     bank_data = BankData(line)
-                    if bank_data not in self.data and self.in_employer_names(
-                            bank_data.message):
+                    if bank_data not in self.finished \
+                            and bank_data not in self.data \
+                            and self.in_employer_names(bank_data.message):
                         self.data.append(bank_data)
 
 

@@ -81,9 +81,20 @@ class PdfFile:
     def __init__(self, settings):
         self.settings = settings
         self.data = []
+        self.finished = []
         self.p_join = os.path.join
 
+    def load_finished(self):
+        for file in os.listdir(self.settings.dest_pdfs):
+            pdf_path = os.path.join(self.settings.dest_pdfs, file)
+            pdf = PdfReader(pdf_path)
+            pages = pdf.pages
+            data = PdfData(pages[0].extract_text(), file)
+            if data not in self.finished:
+                self.finished.append(data)
+
     def extract_data(self):
+        self.load_finished()
         for file in os.listdir(self.settings.src_pdfs):
             pdf_path = os.path.join(self.settings.src_pdfs, file)
             pdf = PdfReader(pdf_path)
@@ -97,11 +108,19 @@ class PdfFile:
                     data.current_filename = new_name
                     wr_pdf.add_page(page)
                     wr_pdf.write(self.p_join(self.settings.src_pdfs, new_name))
+                    if data in self.finished:
+                        os.remove(self.p_join(self.settings.src_pdfs, file))
+                        break
                     if data not in self.data:
                         self.data.append(data)
                 os.remove(self.p_join(self.settings.src_pdfs, file))
             else:
 
                 data = PdfData(pages[0].extract_text(), file)
-                if data not in self.data:
+
+                if data in self.finished:
+                    print("enter Here", file)
+                    os.remove(self.p_join(self.settings.src_pdfs, file))
+                    continue
+                elif data not in self.data:
                     self.data.append(data)

@@ -67,6 +67,8 @@ class Compare:
                 fl.write(str(i.csv))
                 fl.write(str(i.csv2))
 
-        with open(os.path.join(self.settings.dest_folder, "Notfound.csv"), "a") as fl:
+        with open(os.path.join(self.settings.dest_folder, "Notfound.csv"), "w") as fl:
             for i in self.csv:
                 fl.write(str(i))
+        for file in os.listdir(self.settings.src_csv):
+            os.remove(os.path.join(self.settings.src_csv, file))
